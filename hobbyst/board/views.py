@@ -7,7 +7,7 @@ from django.http import (
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from board.models import Post, Comment, PostImage
+from board.models import Post, Comment, PostImage, HashTag
 from board.forms import CommentForm, PostForm
 # Create your views here.
 
@@ -85,6 +85,17 @@ def post_add(request):
                     photo=image_file,
                 )
 
+            # "tags"에 전달 된 문자열을 분리해 HashTag생성
+            tag_string = request.POST.get("tags")
+            if tag_string:
+                tag_name_list = [tag_name.strip() for tag_name in tag_string.split(",")]
+                for tag_name in tag_name_list:
+                    tag, _ = HashTag.objects.get_or_create(
+                        name=tag_name,
+                    )
+                    # get_or_create로 생성하거나 가져온 HashTag객체를 Post의 tags에 추가한다
+                    post.tags.add(tag)
+
             # 모든 PostImage와 Post의 생성이 완료되면
             # 피드페이지로 이동하여 생성된 Post의 위치로 스크롤되도록 한다
             url = reverse("board:home") + f"#post-{post.id}"
@@ -96,3 +107,20 @@ def post_add(request):
 
     context = {"form": form}
     return render(request, "board/post_add.html", context)
+
+def tags(request, tag_name):
+    try:
+        tag = HashTag.objects.get(name=tag_name)
+    except HashTag.DoesNotExist:
+        # tag_name에 해당하는 HashTag를 찾지 못한 경우 빈 QuerySet을 돌려준다
+        posts = Post.objects.none()
+    else:
+        posts = Post.objects.filter(tags=tag)
+
+    # context로 Template에 필터링 된 Post QuerySet을 넘겨주며,
+    # 어떤 tag_name으로 검색했는지도 넘겨준다
+    context = {
+        "tag_name": tag_name,
+        "posts": posts,
+    }
+    return render(request, "board/tags.html", context)
