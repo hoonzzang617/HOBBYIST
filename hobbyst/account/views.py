@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from account.forms import LoginForm, SignupForm
 from account.models import User
 
@@ -48,9 +48,16 @@ def signup(request):
             return render(request, 'account/signup.html', context)
     else:
         form = SignupForm()
-        
+
     context = {'form':form}
     return render(request, 'account/signup.html', context)
     # form = SignupForm()
     # context = {'form':form}
     # return render(request, 'account/signup.html', context)
+
+def profile(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    context = {
+        "user":user,
+    }
+    return render(request, "account/profile.html", context)

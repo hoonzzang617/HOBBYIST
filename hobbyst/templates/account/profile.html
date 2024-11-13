@@ -1,0 +1,17 @@
+{% extends 'base_nav.html' %}
+
+{% block content %}
+<div id="profile">
+    <div class="info">
+        {% if user.profile_image %}
+            <img src="{{ user.profile_image.url }}">
+        {% endif %}
+
+        <div class="info-texts">
+            <h1>{{ user.username }}</h1>
+            <p>{{ user.short_description }}</p>
+            <p>{{ user.preference }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
