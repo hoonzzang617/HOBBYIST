@@ -3,10 +3,10 @@
 {% block content %}
 <nav>
     <h1>
-        <a href="/board/">Pystagram</a>
+        <a href="{% url 'board:home' %}">Pystagram</a>
     </h1>
     <!-- 로그아웃 링크도 함께 추가 -->
-    <a href="/account/logout/">Logout</a>
+    <a href="{% url 'account:logout' %}">Logout</a>
 </nav>
 <div id="container">
     <div id="post-add">

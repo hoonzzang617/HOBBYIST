@@ -5,6 +5,8 @@ from django.http import (
 )
 
 from django.shortcuts import render, redirect
+from django.urls import reverse
+
 from board.models import Post, Comment, PostImage
 from board.forms import CommentForm, PostForm
 # Create your views here.
@@ -12,7 +14,7 @@ from board.forms import CommentForm, PostForm
 
 def home(request):
     if not request.user.is_authenticated:
-        return redirect('/account/login')
+        return redirect("account:login")
     posts = Post.objects.all()
     comment_form = CommentForm()
     context = {
@@ -46,14 +48,16 @@ def comment_add(request):
         print(comment.user)
 
         # 생성한 comment에서 연결된 post정보를 가져와서 id값을 사용
-        return HttpResponseRedirect(f"/board/#post-{comment.post.id}")
+        url = reverse("board:home") + f"#post-{comment.post.id}"
+        return HttpResponseRedirect(url)
     
 def comment_delete(request, comment_id):
     if request.method == "POST":
         comment = Comment.objects.get(id=comment_id)
         if comment.user == request.user:
             comment.delete()
-            return HttpResponseRedirect(f"/board/#post-{comment.post.id}")
+            url = reverse("board:home") + f"#post-{comment.post.id}"
+            return HttpResponseRedirect(url)
         else:
             return HttpResponseForbidden("이 댓글을 삭제할 권한이 없습니다")
     else:
@@ -83,7 +87,7 @@ def post_add(request):
 
             # 모든 PostImage와 Post의 생성이 완료되면
             # 피드페이지로 이동하여 생성된 Post의 위치로 스크롤되도록 한다
-            url = f"/board/#post-{post.id}"
+            url = reverse("board:home") + f"#post-{post.id}"
             return HttpResponseRedirect(url)
 
     # GET요청일 때는 빈 form을 보여주도록한다
