@@ -1,3 +1,5 @@
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from account.forms import LoginForm, SignupForm
@@ -51,9 +53,6 @@ def signup(request):
 
     context = {'form':form}
     return render(request, 'account/signup.html', context)
-    # form = SignupForm()
-    # context = {'form':form}
-    # return render(request, 'account/signup.html', context)
 
 def profile(request, user_id):
     user = get_object_or_404(User, id=user_id)
@@ -61,3 +60,37 @@ def profile(request, user_id):
         "user":user,
     }
     return render(request, "account/profile.html", context)
+
+def followers(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    relationships = user.follower_relationships.all()
+    context = {
+        'user':user,
+        'relationships':relationships,
+    }
+    return render(request, 'account/followers.html', context)
+
+def following(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    relationships = user.following_relationships.all()
+    context = {
+        'user':user,
+        'relationships':relationships,
+    }
+    return render(request, 'account/following.html', context)
+
+def follow(request, user_id):
+
+    user = request.uesr
+
+    target_user = get_object_or_404(User, id=user_id)
+
+    if target_user in user.following.all():
+        user.following.remove(target_user)
+    
+    else:
+        user.following.add(target_user)
+
+    
+    url_next = request.Get.get('next') or reverse('account:profile', args=[user.id])
+    return HttpResponseRedirect(url_next)
