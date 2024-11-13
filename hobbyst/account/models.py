@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
+from multiselectfield import MultiSelectField
 # Create your models here.
 
 class User(AbstractUser):
@@ -19,7 +19,7 @@ class User(AbstractUser):
         ('friends', '사교'),
         ('etc', '이외'),
     ]
-    preference = models.CharField(max_length=20, choices=preference_choices, null=True, blank=True)
+    preference = MultiSelectField(choices=preference_choices, max_choices=5, max_length=100, null=True, blank=True)
 
     following = models.ManyToManyField(
         'self',
