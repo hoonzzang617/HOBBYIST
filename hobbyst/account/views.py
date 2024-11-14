@@ -81,7 +81,7 @@ def following(request, user_id):
 
 def follow(request, user_id):
 
-    user = request.uesr
+    user = request.user
 
     target_user = get_object_or_404(User, id=user_id)
 
@@ -92,5 +92,5 @@ def follow(request, user_id):
         user.following.add(target_user)
 
     
-    url_next = request.Get.get('next') or reverse('account:profile', args=[user.id])
+    url_next = request.GET.get('next') or reverse('account:profile', args=[user.id])
     return HttpResponseRedirect(url_next)

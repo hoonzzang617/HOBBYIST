@@ -29,6 +29,16 @@ class User(AbstractUser):
         through='account.Relationship'
     )
 
+    like_posts = models.ManyToManyField(
+        "board.Post",
+        verbose_name="좋아요 누른 Post목록",
+        related_name="like_users",
+        blank=True,
+    )
+
+    def __str__(self):
+        return self.username
+
 class Relationship(models.Model):
     from_user = models.ForeignKey(
         'account.User',
